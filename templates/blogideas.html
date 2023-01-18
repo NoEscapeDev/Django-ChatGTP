@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://www.paypal.com/sdk/js?client-id=AS2oRK3WdBsM2fMqzdxQGDxHZ2iroa4vuX4UYwXKaHqYV9p2f3TdGNsgVtpKHpQLbZ23uJXIOF0iVfp4&amp;disable-funding=venmo,paylater&amp;currency=USD" data-react-paypal-script-id="react-paypal-js-iiuovjsqddgseanvvbvdvfyshfcyhlishfemccsmoohlegicrnlrdxgarjvfysxxcugyfhkizzkqaoomvxoujxeavnwsiiisyuvngcbrcygkndfpcoyueiftsyhfzptviisidhsmmmbjeqrvsobt" data-sdk-integration-source="react-paypal-js" data-uid-auto="uid_nhzhnnpfmmymhvpnpfvdcyucccuwzf"></script>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="/static/assets/img/papa.png">
+    
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <meta name="theme-color" content="#43A047">
+    <meta name="description" content="Create content 12x faster with our AI Engine. Pixx.ro helps you to create high-quality content, in just a few seconds.">
+    <link rel="apple-touch-icon" href="logo192.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Blog Writing</title>
+    <script defer="defer" src="/static/js/main.6ddff18a.js"></script>
+    <link href="/static/assets/css/main.0733ca4b.css" rel="stylesheet">
+    <script src="/static/tinymce/tinymce.min.js"></script>
+    <script src="/static/script.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <head>
+      <style>
+        .fa-copy:hover,
+        .fa-download:hover {
+          border: 1px solid grey;
+        }
+      </style> 
+      
+      {% comment %} Speech to Text {% endcomment %} 
+      <script>
+        function record() {
+          window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+          if (window.SpeechRecognition === null) {
+            alert("Your browser does not support voice recognition. Please upgrade your browser.");
+          } else {
+            var recognizing;
+            var recognition = new window.SpeechRecognition();
+            recognition.start();
+             
+            recognition.onresult = (event) => {
+              results = document.getElementById("description");
+              results.value = event.results[0][0].transcript;
+              recognition.stop().then(() => {
+                var write = document.getElementById('write');
+                write.click()
+              });
+            }
+
+            
+          }
+        };
+
+      </script> 
+
+      {% comment %} Text to Speech {% endcomment %} 
+      <script>
+        function speak() {
+          // Test for browser compatibility
+          if('speechSynthesis' in window) {
+            text = document.getElementById("blogresult").value;
+            var msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+            msg.onend = function(e) {
+              document.getElementById("speak").innerHTML = ' Speak'
+            }
+            document.getElementById("speak").innerHTML = ' Speaking...';
+            document.getElementById("pause").style.display='block';
+          } else {
+            alert('Your browser does not support text to speech!');
+          }
+        }
+        
+        // Stop text to speech
+        function pause() {
+          window.speechSynthesis.cancel();
+          document.getElementById("pause").style.display='none';
+        }
+
+      </script> 
+
+      {% comment %} Copy Text {% endcomment %} 
+      <script>
+        function copyText() {
+          var copyText = document.getElementById("blogresult");
+          copyText.select();
+          document.execCommand("copy");
+          document.getElementById("copy").innerHTML = ' Copied!'
+          document.getElementById("copy").classList.remove("fa", "fa-copy");
+          document.getElementById("copy").classList.add("fa", "fa-check");
+          document.getElementById("copy").disabled = true;
+        }
+      </script>
+
+
+      <script>
+        $(document).ready(function() {
+            $("#mp3_download").click(function() {
+              var csrf_token = $('meta[name="csrf-token"]').attr('content');
+              $.ajax({
+                method: 'POST',
+                url: '/download-audio/',
+                data: {
+                    textarea: $('#blogresult').val(),
+                    language: 'en',
+                    csrfmiddlewaretoken: csrf_token
+                },
+                xhrFields: {
+                  responseType: 'blob'
+              },
+              success: function(response) {
+                  // create an anchor tag
+                  var link = document.createElement('a');
+                  var blob = new Blob([response], {type: "audio/mp3"});
+                  var url = URL.createObjectURL(blob);
+                  link.href = url;
+                  link.download = 'audio.mp3';
+                  // click the anchor tag
+                  link.click();
+              },
+                error: function(error) {
+                    alert("Something is wrong on client Side")
+                }
+            });
+            
+                     
+            });
+        });
+      </script>
+    
+    <body>
+      
+      {% if loc %}                         
+      <a href="../static/audios/{{loc}}" download id='download-audio'></a>
+      {% endif %}
+  
+      
+
+      <div id="root">
+        <div class="app">
+          <div class="modal2">
+            <div class="card modal2-box">
+              <svg class="remixicon-icon modal2-close-icon" width="26" height="26" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+              </svg>
+              <button type="button" class="btn app-btn">Got It</button>
+            </div>
+          </div> {% include 'navbar.html' %} <div class="container-fluid">
+            <div class="row">
+              <div class="main-content">
+                <div class="page-container pt-2">
+                  <div class="container-fluid">
+                    <div class="row t-w-c">
+                      <div class="col-9 ts-main">
+                        <div class="writer-container card-container">
+                          <div class="w-main">
+                            <div style="display: none;"></div>
+                            <div class="ck ck-reset ck-editor ck-rounded-corners" role="application" dir="ltr" lang="en" aria-labelledby="ck-editor__label_e215cb23fdaf2086df480e32884bbaf87">
+                              <div class="ck ck-editor__top ck-reset_all" role="presentation">
+                                <div class="ck ck-sticky-panel">
+                                  <div class="ck ck-sticky-panel__placeholder"></div>
+                                  <div class="d-flex justify-content-around" style='padding: 10px;'>
+                                    <b class='btn btn-default'>
+                                      <b>Result:</b>
+                                    </b>
+                                    <i class='btn btn-default fa fa-volume-up' id='speak' onclick='speak()'> Speak</i>
+                                    <i class='btn btn-default fa fa-stop-circle' id='pause' style='display: none' onclick='pause()'> Stop</i>
+                                    <button class='btn btn-default fa fa-copy' id='copy' onclick='copyText()'> Copy</button>
+                                    <a href='#' class='btn btn-default fa fa-download'> PDF</a>
+                                    <a href='#' class='btn btn-default fa fa-download'> Docx</a>
+                                    
+                                    <form method='POST' onsubmit="return false;">
+                                      {% csrf_token %}
+                                      <button class='btn btn-default fa fa-download' id='mp3_download'> Mp3</button>
+                                  </div>
+                                </div>
+                              </div>
+                              <textarea role="presentation" id='blogresult' name="textarea" style='padding: 20px; width:100% !important; height:600px !important;' class='form-control ck ck-editor__main'>{{response}}</textarea>
+                            </div>
+                          </form>
+                          </div>
+                        </div>
+                        <label class="lb-info form-label mt-2 app-success"></label>
+                      </div>
+                      <div class="col-3 right-sb">
+                        <div class="modal2">
+                          <div class="card modal2-box">
+                            <svg class="remixicon-icon modal2-close-icon" width="26" height="26" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                            </svg>
+                            <button type="button" class="btn app-btn">Got It</button>
+                          </div>
+                        </div>
+                        <div class="modal2">
+                          <div class="card modal2-box">
+                            <svg class="remixicon-icon modal2-close-icon" width="26" height="26" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"></path>
+                            </svg>
+                            <div class="d-flex flex-column">
+                              <div class="small-progress"></div>
+                              <span>Generating outlines...</span>
+                            </div>
+                          </div>
+                        </div>
+                        <form method="Post"> {% csrf_token %} <div class="p-3 card-container r-sidebar">
+                            <div class="mb-3 tool-box" style="display: block;">
+                              <label class="form-label">Topic <span class="i-btn">ⓘ <span class="tooltiptext">AI will examine this and will write according to it. Or you can use Mic to record</span>
+                                </span>
+                                <i class="fa fa-microphone p-2" onclick='record()' style='font-size: 16px' aria-hidden="true"></i>
+                              </label>
+                              <textarea name="description" type="text" id='description' class="form-control" placeholder="" style="height: 100px;"></textarea>
+                            </div>
+                            <div class="mb-3 tool-box">
+                              <label class="form-label">Models <span class="i-btn">ⓘ <span class="tooltiptext">This is the Models type, choose which suits you.</span>
+                                </span>
+                              </label>
+                              <select class="form-select" id='models' name='models'>
+                                <option value="text-davinci-003">text-davinci-003</option>
+                                <option value="text-curie-001">text-curie-001</option>
+                                <option value="text-babbage-001">text-babbage-001</option>
+                                <option value="text-ada-001">text-ada-001</option>
+                              </select>
+                            </div>
+                            <div class="mb-3 tool-box">
+                              <label class="form-label">Formality <span class="i-btn">ⓘ <span class="tooltiptext">This is the Formality type, choose which suits you.</span>
+                                </span>
+                              </label>
+                              <select class="form-select" id='ideas' name='formality'>
+                                <option value="default">Default</option>
+                                <option value="notformal">Not Formal</option>
+                                <option value="formal">Formal</option> {% comment %} <option value="0">Blog Ideas</option>
+                                <option value="1">Blog Outline</option>
+                                <option value="2">Intro</option>
+                                <option value="3">Blog Section</option>
+                                <option value="4">Article Writer</option>
+                                <option value="5">Answer</option>
+                                <option value="6">Conclusion</option>
+                                <option value="7">SEO Meta Description</option>
+                                <option value="8">Product Description</option>
+                                <option value="9">Marketing Email</option>
+                                <option value="10">Ad Copy</option>
+                                <option value="11">Profile Bio</option> {% endcomment %}
+                              </select>
+                            </div>
+                            <div class="mb-3 tool-box">
+                              <label class="form-label">Variant <span class="i-btn">ⓘ <span class="tooltiptext">This is the Variant , choose which suits you.</span>
+                                </span>
+                              </label>
+                              <input type='text' name='variant' class="form-control" placeholder="1">
+                            </div>
+                            <div class="mb-3 tool-box" style="display: block;" id='language'>
+                              <label class="form-label">Language <span class="i-btn">ⓘ <span class="tooltiptext">AI will write in selected language.</span>
+                                </span>
+                              </label>
+                              <select name="language" class="form-select">
+                                <option value="English">English</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="Turkish">Turkish</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Russian">Russian</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Swedish">Swedish</option>
+                                <option value="German">German</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Romanian">Romanian</option>
+                                <option value="French">French</option>
+                                <option value="Portuguese">Portuguese</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Arabic">Arabic</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Indonesian">Indonesian</option>
+                                <option value="Vietnamese">Vietnamese</option>
+                                <option value="Thai">Thai</option>
+                                <option value="Dutch">Dutch</option>
+                                <option value="Polish">Polish</option>
+                                <option value="Danish">Danish</option>
+                                <option value="Norwegian">Norwegian</option>
+                                <option value="Finnish">Finnish</option>
+                                <option value="Czech">Czech</option>
+                                <option value="Hungarian">Hungarian</option>
+                                <option value="Greek">Greek</option>
+                                <option value="Bulgarian">Bulgarian</option>
+                                <option value="Croatian">Croatian</option>
+                                <option value="Slovak">Slovak</option>
+                                <option value="Slovenian">Slovenian</option>
+                                <option value="Serbian">Serbian</option>
+                                <option value="Ukrainian">Ukrainian</option>
+                                <option value="Hebrew">Hebrew</option>
+                                <option value="Urdu">Urdu</option>
+                                <option value="Persian">Persian</option>
+                                <option value="Malay">Malay</option>
+                                <option value="Bengali">Bengali</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Telugu">Telugu</option>
+                                <option value="Marathi">Marathi</option>
+                                <option value="Kannada">Kannada</option>
+                                <option value="Gujarati">Gujarati</option>
+                                <option value="Hausa">Hausa</option>
+                                <option value="Igbo">Igbo</option>
+                                <option value="Yoruba">Yoruba</option>
+                                <option value="Oromo">Oromo</option>
+                                <option value="Amharic">Amharic</option>
+                                <option value="Akan">Akan</option>
+                                <option value="Swahili">Swahili</option>
+                                <option value="Zulu">Zulu</option>
+                                <option value="Xhosa">Xhosa</option>
+                                <option value="Afrikaans">Afrikaans</option>
+                                <option value="Ndebele">Ndebele</option>
+                                <option value="Sotho">Sotho</option>
+                                <option value="Tswana">Tswana</option>
+                              </select>
+                            </div>
+                            <div class="mb-3 tool-box" style="display: block;" id='tones'>
+                              <label class="form-label">Tone Of Voice <span class="i-btn">ⓘ <span class="tooltiptext">AI will try its best to follow the selected tone.</span>
+                                </span>
+                              </label>
+                              <select name="tones" class="form-select">
+                                <option value="authoritative">Authoritative</option>
+                                <option value="caring">Caring</option>
+                                <option value="cheerful">Cheerful</option>
+                                <option value="coarse">Coarse</option>
+                                <option value="conservative">Conservative</option> {% comment %} <option value="">Default</option>
+                                <option value="Informative">Informative</option>
+                                <option value="Convincing">Convincing</option>
+                                <option value="Casual">Casual</option>
+                                <option value="Worried">Worried</option>
+                                <option value="Funny">Funny</option>
+                                <option value="Joyful">Joyful</option>
+                                <option value="Formal">Formal</option>
+                                <option value="Inspirational">Inspirational</option> {% endcomment %}
+                              </select>
+                            </div>
+                            <div class="mb-3 tool-box" style="display: block;" id='keywords'>
+                              <label class="form-label">Keywords (Optional) <span class="i-btn">ⓘ <span class="tooltiptext">AI will try to add information related to the keywords, its optional.</span>
+                                </span>
+                              </label>
+                              <textarea name="keywords" type="text" class="form-control" placeholder=""></textarea>
+                            </div>
+                            <button type="submit" class="btn app-btn mt-1 mb-1" id='write'  style='background:#007BFF !important;'>Write</button>
+                          </div>
+                      </div>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+</html>

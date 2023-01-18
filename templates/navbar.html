@@ -1,0 +1,29 @@
+		
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="{% url 'tools' %}">
+                <img class="me-1 mb-1" height="30" src="/static/assets/img/papa.png" style='color:#3F6745 !important;'>Papa</a>
+              <div class="collapse navbar-collapse" id="navbarNav">
+          
+              </div>
+              <div class="d-flex">
+              
+                {% comment %} <a class="navbar-brand mx-2" href="/account">
+                  <div class="acc-btn">
+                    <svg class="remixicon-icon " width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M4 22a8 8 0 1 1 16 0h-2a6 6 0 1 0-12 0H4zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6zm0-2c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"></path>
+                    </svg>
+                  </div>
+                </a> {% endcomment %}
+
+
+                <a class="navbar-brand mx-2" href="{% url 'logout' %}">
+                  <div class="logout-btn">
+                    <svg class="remixicon-icon " width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6.265 3.807l1.147 1.639a8 8 0 1 0 9.176 0l1.147-1.639A9.988 9.988 0 0 1 22 12c0 5.523-4.477 10-10 10S2 17.523 2 12a9.988 9.988 0 0 1 4.265-8.193zM11 12V2h2v10h-2z"></path>
+                    </svg>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </nav>
